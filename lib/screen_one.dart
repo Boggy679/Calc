@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'logic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'logic.dart';
 
 class Calculator extends StatefulWidget {
-  const Calculator({Key? key}) : super(key: key);
+  const Calculator({super.key});
 
   @override
   State<Calculator> createState() => _CalculatorState();
@@ -13,17 +13,18 @@ class Calculator extends StatefulWidget {
 class _CalculatorState extends State<Calculator> {
   Widget button(String buttonText) {
     return ElevatedButton(
-      onPressed: () => {calc(buttonText)},
-      child: Text(buttonText, style: const TextStyle(
-        fontSize: 20,
-      ),
+      onPressed: () => calc(buttonText),
+      child: Text(
+        buttonText,
+        style: const TextStyle(
+          fontSize: 20,
+        ),
       ),
     );
   }
 
   static List<String> historyList = [];
   static int iteration = 1;
-
 
   @override
   Widget build(BuildContext context) {
@@ -46,18 +47,18 @@ class _CalculatorState extends State<Calculator> {
             ),
           ),
           TextButton(
-              onPressed: (){
-                ToHistoryPage.func2(context);
-                addHistoryListToSF();
-              },
+            onPressed: () async {
+              await addHistoryListToSF();
+              ToHistoryPage.func2(context);
+            },
             child: Container(
-            color: Colors.purple,
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-            child: const Text(
-              'History',
-              style: TextStyle(color: Colors.white, fontSize: 15.0),
+              color: Colors.purple,
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+              child: const Text(
+                'History',
+                style: TextStyle(color: Colors.white, fontSize: 15.0),
+              ),
             ),
-          ),
           ),
         ],
       ),
@@ -69,7 +70,8 @@ class _CalculatorState extends State<Calculator> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Padding(padding: const EdgeInsets.all(5),
+                Padding(
+                  padding: const EdgeInsets.all(5),
                   child: Text(
                     output,
                     textAlign: TextAlign.left,
@@ -85,10 +87,9 @@ class _CalculatorState extends State<Calculator> {
                 button('+'),
                 button('/'),
                 button('-'),
-
               ],
             ),
-             const SizedBox(
+            const SizedBox(
               height: 55,
             ),
             Row(
@@ -145,8 +146,6 @@ class _CalculatorState extends State<Calculator> {
     );
   }
 
-
-
 // logic for most buttons in the calculator
 
   double firstNumber = 0;
@@ -155,38 +154,41 @@ class _CalculatorState extends State<Calculator> {
   String out = "0";
   String operation = "";
 
-  void calc(buttonText) {
+  Future<void> calc(buttonText) async {
     if (buttonText == "=") {
       secondNumber = double.parse(output);
       if (operation == "+") {
         out = (firstNumber + secondNumber).toString();
+        buildHistory('+');
       }
       if (operation == "*") {
         out = (firstNumber * secondNumber).toString();
+        buildHistory('*');
       }
       if (operation == "-") {
         out = (firstNumber - secondNumber).toString();
+        buildHistory('-');
       }
       if (operation == "/") {
         out = (firstNumber / secondNumber).toString();
+        buildHistory('/');
       }
       firstNumber = 0.0;
       secondNumber = 0.0;
-    }
-    else if (buttonText == "-" || buttonText == "+" || buttonText == "/" ||
+    } else if (buttonText == "-" ||
+        buttonText == "+" ||
+        buttonText == "/" ||
         buttonText == "*") {
       firstNumber = double.parse(output);
       operation = buttonText;
       out = "0";
       output = output + buttonText;
-    }
-    else if (buttonText == "C") {
+    } else if (buttonText == "C") {
       out = "0";
       firstNumber = 0;
       secondNumber = 0;
       operation = "";
-    }
-    else{
+    } else {
       out = out + buttonText;
     }
     setState(() {
@@ -194,6 +196,9 @@ class _CalculatorState extends State<Calculator> {
     });
   }
 
+  void buildHistory( String ops) {
+    historyList.add('$firstNumber + $ops + $secondNumber = $out');
+  }
 
   addHistoryListToSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

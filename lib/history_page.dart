@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
 
@@ -10,7 +9,7 @@ class HistoryPage extends StatefulWidget {
 }
 
 class HistoryPageState extends State<HistoryPage> {
-  static List<String> ourList = ['All equations:'];
+  static List<String> ourList = ['All equations:-'];
 
   @override
   void initState() {
@@ -54,4 +53,3 @@ class HistoryPageState extends State<HistoryPage> {
     return stringValue;
   }
 }
-
