@@ -196,7 +196,7 @@ class _CalculatorState extends State<Calculator> {
     });
   }
 
-  void buildHistory( String ops) {
+  void buildHistory(String ops) {
     historyList.add('$firstNumber + $ops + $secondNumber = $out');
   }
 
