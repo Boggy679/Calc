@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'logic.dart';
-
 
 class Calculator extends StatefulWidget {
   const Calculator({super.key});
@@ -75,7 +75,7 @@ class _CalculatorState extends State<Calculator> {
                   child: Text(
                     output,
                     textAlign: TextAlign.left,
-                    style: const TextStyle(color: Colors.white, fontSize: 100),
+                    style: const TextStyle(color: Colors.white, fontSize: 70),
                   ),
                 )
               ],
@@ -148,56 +148,47 @@ class _CalculatorState extends State<Calculator> {
 
 // logic for most buttons in the calculator
 
-  double firstNumber = 0;
-  double secondNumber = 0;
   String output = "0";
   String out = "0";
-  String operation = "";
+  String expression = "";
 
   Future<void> calc(buttonText) async {
     if (buttonText == "=") {
-      secondNumber = double.parse(output);
-      if (operation == "+") {
-        out = (firstNumber + secondNumber).toString();
-        buildHistory('+');
+      if (expression.isEmpty) {
+        expression = expression + "0";
       }
-      if (operation == "*") {
-        out = (firstNumber * secondNumber).toString();
-        buildHistory('*');
+      try {
+        Parser p = Parser();
+        Expression exp = p.parse(expression);
+        ContextModel cm = ContextModel();
+        var result = exp.evaluate(EvaluationType.REAL, cm);
+        buildHistory(expression, result.toString());
+        expression = result.toString();
+        out = result.toString();
+        print('result =  $result');
+      } catch (error) {
+        print('invalid expression, please start with a number and end with a number =  $error');
       }
-      if (operation == "-") {
-        out = (firstNumber - secondNumber).toString();
-        buildHistory('-');
-      }
-      if (operation == "/") {
-        out = (firstNumber / secondNumber).toString();
-        buildHistory('/');
-      }
-      firstNumber = 0.0;
-      secondNumber = 0.0;
-    } else if (buttonText == "-" ||
-        buttonText == "+" ||
-        buttonText == "/" ||
-        buttonText == "*") {
-      firstNumber = double.parse(output);
-      operation = buttonText;
+    }
+    else if (buttonText == "C") {
       out = "0";
-      output = output + buttonText;
-    } else if (buttonText == "C") {
-      out = "0";
-      firstNumber = 0;
-      secondNumber = 0;
-      operation = "";
+      expression = "";
     } else {
-      out = out + buttonText;
+      expression = expression + buttonText;
+      print(expression);
+      if(!["+", "-", "*", "/"].contains(buttonText)){
+        out = expression;
+      }
+      output = output + buttonText;
     }
     setState(() {
-      output = double.parse(out).toStringAsFixed(2);
+      output = out;
     });
   }
 
-  void buildHistory(String ops) {
-    historyList.add('$firstNumber + $ops + $secondNumber = $out');
+  void buildHistory(String exp, String res) {
+    var idk = '$exp = $res';
+    historyList.add(idk);
   }
 
   addHistoryListToSF() async {
