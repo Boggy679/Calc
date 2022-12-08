@@ -187,8 +187,8 @@ class _CalculatorState extends State<Calculator> {
   }
 
   void buildHistory(String exp, String res) {
-    var idk = '$exp = $res';
-    historyList.add(idk);
+    var printHistory = '$exp = $res';
+    historyList.add(printHistory);
   }
 
   addHistoryListToSF() async {
